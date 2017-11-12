@@ -4,7 +4,7 @@ using System.Collections;
 
 public class ScoreManager : MonoBehaviour
 {
-    public static int score;
+    public PlayerHealth player;
 
 
     Text text;
@@ -13,12 +13,12 @@ public class ScoreManager : MonoBehaviour
     void Awake ()
     {
         text = GetComponent <Text> ();
-        score = 0;
+        
     }
 
 
     void Update ()
     {
-        text.text = "Score: " + score;
+        text.text = "Gold: " + player.currentGold;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // -------------------------------------------------------------------------
 // Bridge client code sample for Unity
@@ -31,6 +32,9 @@ public class ControllerScript : MonoBehaviour {
    public LayerMask defendLayerMask = -1;
    public float movementSpeed = 1.0f;
    public float cameraSpeed = 25.0f;
+   public PlayerHealth player;
+   public Text GoldText;
+   AudioSource playerAudioError;
    	public float selectedItemDistance = 1.0f;
     public ItemManager itemManager;
     float smoothTime = 0.05f;
@@ -48,28 +52,29 @@ public class ControllerScript : MonoBehaviour {
    void selectItem(int itemID) {
       if (itemID == 0) {
          selectedState = SelectionState.NOTHING;
-         if(selectedItem)
-            {
-                Destroy(selectedItem.gameObject);
-            }
+         if (selectedItem) {
+            Destroy (selectedItem.gameObject);
+         }
          selectedItem = null;
-      } else {
+      } else if (player.currentGold > 9) {
          if (itemManager != null) {
-            if(selectedItem != null)
-            {
-                Destroy(selectedItem.gameObject);
+            if (selectedItem != null) {
+               Destroy (selectedItem.gameObject);
             }
             selectedItem = itemManager.getItem (itemID);
-            Vector3 cameraForward = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
+            Vector3 cameraForward = new Vector3 (Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
             selectedItemOffset = selectedItemDistance * cameraForward.normalized;
-            selectedItem.transform.position = transform.position +  selectedItemOffset;
+            selectedItem.transform.position = transform.position + selectedItemOffset;
             selectedState = SelectionState.DISPLAYING;
             initCameraDirection = Camera.main.transform.forward;
          }
+      } else {
+         playerAudioError.Play ();
       }
    }
 
    void Start() {
+      playerAudioError = GetComponent <AudioSource> ();
    }
 
    void Update() {
@@ -92,6 +97,7 @@ public class ControllerScript : MonoBehaviour {
       if(gameState == GameState.PLACING) {
          if (Input.GetKeyDown (KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return)) {
             gameState = GameState.DEFENDING;
+            GoldText.text = "";
             enemyManager.startSpawn();
          }
          switch (selectedState) {
@@ -125,35 +131,34 @@ public class ControllerScript : MonoBehaviour {
 				}
                   // Place item
                 if (Input.GetKeyDown ("space")) {
-                    if(selectedItemTargetPosition != Vector3.zero)
+               
+               if(selectedItemTargetPosition != Vector3.zero )
                     {
                         
                         itemsList.Add(selectedItem);
                         selectedItem.transform.position = selectedItemTargetPosition;
                         selectedItem = null;
                         selectedState = SelectionState.NOTHING;
+                        player.RemoveGold (10);
                     }
                }
 
                break;
             }
 
-            if(Input.GetKeyDown("left shift") || Input.GetKeyDown("tab") || Input.GetKeyDown("q") || Input.GetKeyDown("w") || Input.GetKeyDown("s") || Input.GetKeyDown("caps lock") || Input.GetKeyDown("<") || Input.GetKeyDown("a") || Input.GetKeyDown("y"))
-            {
+            if (Input.GetKeyDown ("left shift") || Input.GetKeyDown ("tab") || Input.GetKeyDown ("q") || Input.GetKeyDown ("w") || Input.GetKeyDown ("s") || Input.GetKeyDown ("caps lock") || Input.GetKeyDown ("<") || Input.GetKeyDown ("a") || Input.GetKeyDown ("y")) {
 
-                selectItem(1);
-            }
-            else if (Input.GetKeyDown("e") || Input.GetKeyDown("r") || Input.GetKeyDown("t") || Input.GetKeyDown("d") || Input.GetKeyDown("f") || Input.GetKeyDown("g") || Input.GetKeyDown("x") || Input.GetKeyDown("c") || Input.GetKeyDown("v"))
-            {
+               selectItem (1);
+            } else if (Input.GetKeyDown ("e") || Input.GetKeyDown ("r") || Input.GetKeyDown ("t") || Input.GetKeyDown ("d") || Input.GetKeyDown ("f") || Input.GetKeyDown ("g") || Input.GetKeyDown ("x") || Input.GetKeyDown ("c") || Input.GetKeyDown ("v")) {
 
-                selectItem(2);
-            }
-            else if (Input.GetKeyDown("z") || Input.GetKeyDown("u") || Input.GetKeyDown("i") || Input.GetKeyDown("h") || Input.GetKeyDown("j") || Input.GetKeyDown("k") || Input.GetKeyDown("b") || Input.GetKeyDown("n") || Input.GetKeyDown("m"))
-            {
+               selectItem (2);
+            } else if (Input.GetKeyDown ("z") || Input.GetKeyDown ("u") || Input.GetKeyDown ("i") || Input.GetKeyDown ("h") || Input.GetKeyDown ("j") || Input.GetKeyDown ("k") || Input.GetKeyDown ("n") || Input.GetKeyDown ("m")) {
 
-                selectItem(3);
+               selectItem (3);
+            } else if (Input.GetKeyDown ("b") && !emulateHead) {
+               selectItem (3);
             }
-            else if (Input.GetKeyDown("o") || Input.GetKeyDown("p") || Input.GetKeyDown("l")  || Input.GetKeyDown(",") || Input.GetKeyDown(".") || Input.GetKeyDown("-"))
+               else if (Input.GetKeyDown("o") || Input.GetKeyDown("p") || Input.GetKeyDown("l")  || Input.GetKeyDown(",") || Input.GetKeyDown(".") || Input.GetKeyDown("-"))
             {
 
                 selectItem(4);

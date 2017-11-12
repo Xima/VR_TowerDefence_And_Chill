@@ -4,8 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SpikeScript : Trap {
-    public float range = 0.5f;
+   public float range = 0.5f;
+   public float returnTime = 8f;
+   public float reloadTime = 30f;
     bool used = false;
+   float timeUsed;
+   public GameObject needle;
 
     public override void highlight(bool h)
     {
@@ -30,10 +34,20 @@ public class SpikeScript : Trap {
 
     }
 
+   void Update(){
+      if (used && Time.time - timeUsed > returnTime) {
+         needle.transform.Translate (Vector3.down * 2);
+      }
+      if (used && Time.time - timeUsed > reloadTime) {
+         used = false;
+      }
+   }
+
     public override void launch()
     {
         if (!used) {
             used = true;
+            timeUsed = Time.time;
             GetComponent<Animation>().Play();
             List<EnemyHealth> enemies = EnemyManager.getEnemies();
             for (int i = 0; i < enemies.Count; i++)

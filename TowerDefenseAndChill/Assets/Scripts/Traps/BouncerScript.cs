@@ -51,8 +51,10 @@ public class BouncerScript : Trap {
             List<EnemyHealth> enemies = EnemyManager.getEnemies();
             for (int i = 0; i < enemies.Count; i++)
             {
-                if (Vector3.Distance(enemies[i].transform.position, transform.position) < range)
+               Debug.Log (Vector3.Distance (enemies [i].transform.position, sphere.transform.position));
+               if (Vector3.Distance(enemies[i].transform.position, sphere.transform.position) < range)
                 {
+                     Debug.Log ("dsf");
                     enemies[i].TakeDamage(200);
                     enemies[i].gameObject.GetComponent<Rigidbody>().velocity = (gameObject.transform.forward + gameObject.transform.up) * 50;
                 }

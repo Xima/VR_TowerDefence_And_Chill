@@ -6,8 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerHealth: MonoBehaviour
 {
-    public int startingHealth = 1000;
-	public int startingGold = 1000;
+    public int startingHealth = 100;
+	public int startingGold = 20;
 	public Slider healthSlider;
     public Image damageImage;
     public AudioClip deathClip;
@@ -15,6 +15,8 @@ public class PlayerHealth: MonoBehaviour
     public Color flashColour = new Color(1f, 0f, 0f, 0.1f);
     public int currentHealth;
 	public int currentGold;
+
+   BoxCollider endCollider;
 	
 	
     Animator anim;
@@ -30,8 +32,13 @@ public class PlayerHealth: MonoBehaviour
 		anim = GetComponent <Animator> ();
         playerAudio = GetComponent <AudioSource> ();
         currentHealth = startingHealth;
-		currentGold = startingGold;
+		  currentGold = startingGold;
 	}
+
+   void OnTriggerEnter(Collider other) {
+      Destroy(other.gameObject);
+      TakeDamage (10);
+   }
 
 
     void Update ()
@@ -44,12 +51,17 @@ public class PlayerHealth: MonoBehaviour
 		currentGold += amount;
 	}
 
+   public void RemoveGold (int amount)
+   {
+      currentGold -= amount;
+   }
+
     public void TakeDamage (int amount)
     {
         damaged = true;
 
         currentHealth -= amount;
-		healthSlider.value = currentHealth;
+		   healthSlider.value = currentHealth;
 
         playerAudio.Play ();
 		
